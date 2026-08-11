@@ -8,21 +8,35 @@
 
     <h2>聯絡表單</h2>
 
-    <!-- 普通的表單結構 -->
-    <form action="#" method="POST">
+    <!-- 改為普通表單，拿掉 action，改用 JavaScript 處理點擊 -->
+    <form onsubmit="handleSubmit(event)">
         
         <!-- 姓名輸入框 -->
         <label>姓名：</label><br>
-        <input type="text" name="username" required><br><br>
+        <input type="text" id="username" name="username" required><br><br>
 
         <!-- 電子信箱輸入框 -->
         <label>電子信箱：</label><br>
-        <input type="email" name="useremail" required><br><br>
+        <input type="email" id="useremail" name="useremail" required><br><br>
 
         <!-- 提交按鈕 -->
         <button type="submit">提交表單</button>
         
     </form>
+
+    <script>
+        function handleSubmit(event) {
+            // 阻止表單預設的 POST 提交行為，避免 GitHub Pages 噴出 405 錯誤
+            event.preventDefault(); 
+            
+            // 獲取使用者輸入的值
+            var name = document.getElementById('username').value;
+            var email = document.getElementById('useremail').value;
+            
+            // 彈出提示視窗，模擬提交成功的行為
+            alert("提交成功！\n姓名：" + name + "\n電子信箱：" + email);
+        }
+    </script>
 
 </body>
 </html>
