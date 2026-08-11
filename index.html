@@ -5,21 +5,24 @@
     <title>聯絡表單</title>
 </head>
 <body style="font-family: Arial; padding: 20px;">
-    <h2>我的第一個 GitHub Pages 表單</h2>
-    <form action="http://localhost:8080/form/submit?formId=3" method="POST">
-    
-    <!-- 核心隱藏欄位，告訴 Mautic 這是 3 號表單 -->
-    <input type="hidden" name="mauticform[formId]" value="3">
-    <input type="hidden" name="mauticform[formName]" value="userinfocollection">
 
-    <label>姓名：</label><br>
-    <input type="text" name="mauticform[name]" required><br><br>
+    <h2>聯絡表單</h2>
 
-    <label>電子信箱：</label><br>
-    <!-- 注意：這裡的括號內改為 Email，與你 Mautic 後台保持一致 -->
-    <input type="email" name="mauticform[Email]" required><br><br>
+    <!-- 普通的表單結構 -->
+    <form action="#" method="POST">
+        
+        <!-- 姓名輸入框 -->
+        <label>姓名：</label><br>
+        <input type="text" name="username" required><br><br>
 
-    <button type="submit">提交表單</button>
+        <!-- 電子信箱輸入框 -->
+        <label>電子信箱：</label><br>
+        <input type="email" name="useremail" required><br><br>
+
+        <!-- 提交按鈕 -->
+        <button type="submit">提交表單</button>
+        
     </form>
+
 </body>
 </html>
