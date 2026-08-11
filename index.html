@@ -25,37 +25,49 @@
     </form>
 
     <script>
-        function sendToMautic(event) {
-            event.preventDefault(); // 阻止網頁跳轉或重新整理
+    function sendToMautic(event) {
+        event.preventDefault(); // 阻止網頁跳轉
 
-            // 1. 抓取欄位實際輸入的值
-            var nameValue = document.getElementById('username').value;
-            var emailValue = document.getElementById('useremail').value;
+        // 1. 抓取欄位實際輸入的值
+        var nameValue = document.getElementById('username').value;
+        var emailValue = document.getElementById('useremail').value;
 
-            // 2. 打包成 Mautic 看得懂的格式
-            var formData = new FormData();
-            formData.append('mauticform[formId]', '3');
-            formData.append('mauticform[formName]', 'userinfocollection');
-            formData.append('mauticform[name]', nameValue);
-            formData.append('mauticform[Email]', emailValue); // 注意：這裡的 Email 配合您後台的大寫 E
+        // 2. 使用 URL 格式打包資料，這種格式對 Mautic 後台的相容性最高
+        var details = {
+            'mauticform[formId]': '3',
+            'mauticform[formName]': 'userinfocollection',
+            'mauticform[name]': nameValue,
+            'mauticform[email]': emailValue,     // 嘗試全小寫
+            'mauticform[Email]': emailValue      // 同時帶上大寫，雙重保險
+        };
 
-            // 3. 在背景將資料發送到您本機的 Mautic 系統
-            fetch('http://localhost:8080/form/submit?formId=3', {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors' // 允許跨網域發送請求，防止瀏覽器安全機制阻擋
-            })
-            .then(function() {
-                alert("資料已嘗試發送至 Mautic！\n請回後台重新整理檢查。");
-                // 選用：送出後自動清空欄位
-                document.getElementById('username').value = '';
-                document.getElementById('useremail').value = '';
-            })
-            .catch(function(error) {
-                alert("發送失敗，請確認您的 Mautic 服務器是否有正常開啟。");
-            });
+        var formBody = [];
+        for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
         }
-    </script>
+        formBody = formBody.join("&");
+
+        // 3. 在背景將資料發送到您本機的 Mautic 系統
+        fetch('http://localhost:8080/form/submit?formId=3', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody,
+            mode: 'no-cors' // 允許跨網域發送
+        })
+        .then(function() {
+            alert("資料已嘗試發送！請刷新 Mautic 後台查看新紀錄。");
+            document.getElementById('username').value = '';
+            document.getElementById('useremail').value = '';
+        })
+        .catch(function(error) {
+            alert("發送失敗，請確認您的 Mautic 是否正常開啟。");
+        });
+    }
+</script>
 
 </body>
 </html>
