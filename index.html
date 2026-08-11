@@ -32,13 +32,19 @@
         var nameValue = document.getElementById('username').value;
         var emailValue = document.getElementById('useremail').value;
 
-        // 2. 使用 URL 格式打包資料，這種格式對 Mautic 後台的相容性最高
+        // 2. 打包所有可能的名字代碼，進行雙重與多重保險
         var details = {
             'mauticform[formId]': '3',
             'mauticform[formName]': 'userinfocollection',
+            
+            // 針對名字欄位：把所有可能的名字 Alias 全部塞進去
             'mauticform[name]': nameValue,
-            'mauticform[email]': emailValue,     // 嘗試全小寫
-            'mauticform[Email]': emailValue      // 同時帶上大寫，雙重保險
+            'mauticform[firstname]': nameValue,
+            'mauticform[first_name]': nameValue,
+            
+            // 針對信箱欄位：剛剛已經測試成功的組合
+            'mauticform[email]': emailValue,
+            'mauticform[Email]': emailValue
         };
 
         var formBody = [];
@@ -56,10 +62,10 @@
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
             body: formBody,
-            mode: 'no-cors' // 允許跨網域發送
+            mode: 'no-cors'
         })
         .then(function() {
-            alert("資料已嘗試發送！請刷新 Mautic 後台查看新紀錄。");
+            alert("資料已嘗試發送！請刷新 Mautic 後台查看新紀錄（ID: 15）。");
             document.getElementById('username').value = '';
             document.getElementById('useremail').value = '';
         })
@@ -68,6 +74,7 @@
         });
     }
 </script>
+
 
 </body>
 </html>
