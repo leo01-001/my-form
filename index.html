@@ -32,40 +32,31 @@
         var nameValue = document.getElementById('username').value;
         var emailValue = document.getElementById('useremail').value;
 
-        // 2. 打包所有可能的名字代碼，進行雙重與多重保險
-        var details = {
-            'mauticform[formId]': '3',
-            'mauticform[formName]': 'userinfocollection',
-            
-            // 針對名字欄位：把所有可能的名字 Alias 全部塞進去
-            'mauticform[name]': nameValue,
-            'mauticform[firstname]': nameValue,
-            'mauticform[first_name]': nameValue,
-            
-            // 針對信箱欄位：剛剛已經測試成功的組合
-            'mauticform[email]': emailValue,
-            'mauticform[Email]': emailValue
-        };
-
-        var formBody = [];
-        for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-        }
-        formBody = formBody.join("&");
+        // 2. 還原為最安全的 FormData 格式
+        var formData = new FormData();
+        formData.append('mauticform[formId]', '3');
+        formData.append('mauticform[formName]', 'userinfocollection');
+        
+        // 【核心修改】加入段落欄位（Paragraph）在 Mautic 中所有可能的後台代碼
+        formData.append('mauticform[name]', nameValue);
+        formData.append('mauticform[firstname]', nameValue);
+        formData.append('mauticform[first_name]', nameValue);
+        formData.append('mauticform[paragraph]', nameValue);   // 可能性極高 1
+        formData.append('mauticform[paragraph1]', nameValue);  // 可能性極高 2
+        formData.append('mauticform[textarea]', nameValue);    // 可能性極高 3
+        
+        // 信箱欄位（維持不變）
+        formData.append('mauticform[email]', emailValue);
+        formData.append('mauticform[Email]', emailValue); 
 
         // 3. 在背景將資料發送到您本機的 Mautic 系統
         fetch('http://localhost:8080/form/submit?formId=3', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: formBody,
+            body: formData,
             mode: 'no-cors'
         })
         .then(function() {
-            alert("資料已嘗試發送！請刷新 Mautic 後台查看新紀錄（ID: 15）。");
+            alert("資料已嘗試發送！請刷新 Mautic 後台檢查名字有沒有出來。");
             document.getElementById('username').value = '';
             document.getElementById('useremail').value = '';
         })
@@ -74,6 +65,7 @@
         });
     }
 </script>
+
 
 
 </body>
