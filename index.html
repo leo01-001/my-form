@@ -8,16 +8,16 @@
 
     <h2>聯絡表單</h2>
 
-    <!-- 改為普通表單，拿掉 action，改用 JavaScript 處理點擊 -->
-    <form onsubmit="handleSubmit(event)">
+    <!-- 使用 JavaScript 處理提交，不會觸發網頁跳轉 -->
+    <form onsubmit="sendToMautic(event)">
         
         <!-- 姓名輸入框 -->
         <label>姓名：</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="text" id="username" required><br><br>
 
         <!-- 電子信箱輸入框 -->
         <label>電子信箱：</label><br>
-        <input type="email" id="useremail" name="useremail" required><br><br>
+        <input type="email" id="useremail" required><br><br>
 
         <!-- 提交按鈕 -->
         <button type="submit">提交表單</button>
@@ -25,16 +25,35 @@
     </form>
 
     <script>
-        function handleSubmit(event) {
-            // 阻止表單預設的 POST 提交行為，避免 GitHub Pages 噴出 405 錯誤
-            event.preventDefault(); 
-            
-            // 獲取使用者輸入的值
-            var name = document.getElementById('username').value;
-            var email = document.getElementById('useremail').value;
-            
-            // 彈出提示視窗，模擬提交成功的行為
-            alert("提交成功！\n姓名：" + name + "\n電子信箱：" + email);
+        function sendToMautic(event) {
+            event.preventDefault(); // 阻止網頁跳轉或重新整理
+
+            // 1. 抓取欄位實際輸入的值
+            var nameValue = document.getElementById('username').value;
+            var emailValue = document.getElementById('useremail').value;
+
+            // 2. 打包成 Mautic 看得懂的格式
+            var formData = new FormData();
+            formData.append('mauticform[formId]', '3');
+            formData.append('mauticform[formName]', 'userinfocollection');
+            formData.append('mauticform[name]', nameValue);
+            formData.append('mauticform[Email]', emailValue); // 注意：這裡的 Email 配合您後台的大寫 E
+
+            // 3. 在背景將資料發送到您本機的 Mautic 系統
+            fetch('http://localhost:8080/form/submit?formId=3', {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors' // 允許跨網域發送請求，防止瀏覽器安全機制阻擋
+            })
+            .then(function() {
+                alert("資料已嘗試發送至 Mautic！\n請回後台重新整理檢查。");
+                // 選用：送出後自動清空欄位
+                document.getElementById('username').value = '';
+                document.getElementById('useremail').value = '';
+            })
+            .catch(function(error) {
+                alert("發送失敗，請確認您的 Mautic 服務器是否有正常開啟。");
+            });
         }
     </script>
 
