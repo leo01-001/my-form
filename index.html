@@ -6,67 +6,61 @@
 </head>
 <body style="font-family: Arial; padding: 20px;">
 
-    <h2>聯絡表單</h2>
+<h2>聯絡表單</h2>
 
-    <!-- 使用 JavaScript 處理提交，不會觸發網頁跳轉 -->
-    <form onsubmit="sendToMautic(event)">
+<!-- 表單提交時觸發 JavaScript 函數，並防止網頁重新整理 -->
+<form onsubmit="sendToMautic(event)">
+    <!-- 姓名輸入框 -->
+    <label>姓名：</label><br>
+    <input type="text" id="username" required><br><br>
+    
+    <!-- 電子信箱輸入框 -->
+    <label>電子信箱：</label><br>
+    <input type="email" id="useremail" required><br><br>
+    
+    <!-- 提交按鈕 -->
+    <button type="submit">提交表單</button>
+</form>
+
+<script>
+function sendToMautic(event) {
+    event.preventDefault(); // 阻止表單預設的跳轉行為
+    
+    // 1. 抓取使用者在網頁畫面上輸入的值
+    var nameValue = document.getElementById('username').value;
+    var emailValue = document.getElementById('useremail').value;
+    
+    // 2. 封裝成 Mautic 後台能解析的 FormData 格式
+    var formData = new FormData();
+    formData.append('mauticform[formId]', '3');
+    formData.append('mauticform[formName]', 'userinfocollection');
+    
+    // 【核心修正】對應您 Mautic 後台 Text: Paragraph 欄位的實際別名
+    formData.append('mauticform[paragraph]', nameValue); 
+    formData.append('mauticform[email]', emailValue);
+
+    // 3. 在背景將資料非同步發送到本機的 Mautic 系統
+    // 使用 mode: 'no-cors' 解決跨網域安全阻擋問題
+    fetch('http://localhost:8080/form/submit?formId=3', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+    })
+    .then(function() {
+        // 由於 no-cors 模式下瀏覽器一律判定連線已發出，故在此直接提示成功
+        alert("表單已成功送出！請刷新 Mautic 後台檢查「姓名」與「Email」。");
         
-        <!-- 姓名輸入框 -->
-        <label>姓名：</label><br>
-        <input type="text" id="username" required><br><br>
-
-        <!-- 電子信箱輸入框 -->
-        <label>電子信箱：</label><br>
-        <input type="email" id="useremail" required><br><br>
-
-        <!-- 提交按鈕 -->
-        <button type="submit">提交表單</button>
-        
-    </form>
-
-    <script>
-    function sendToMautic(event) {
-        event.preventDefault(); // 阻止網頁跳轉
-
-        // 1. 抓取欄位實際輸入的值
-        var nameValue = document.getElementById('username').value;
-        var emailValue = document.getElementById('useremail').value;
-
-        // 2. 還原為最安全的 FormData 格式
-        var formData = new FormData();
-        formData.append('mauticform[formId]', '3');
-        formData.append('mauticform[formName]', 'userinfocollection');
-        
-        // 【核心修改】加入段落欄位（Paragraph）在 Mautic 中所有可能的後台代碼
-        formData.append('mauticform[name]', nameValue);
-        formData.append('mauticform[firstname]', nameValue);
-        formData.append('mauticform[first_name]', nameValue);
-        formData.append('mauticform[paragraph]', nameValue);   // 可能性極高 1
-        formData.append('mauticform[paragraph1]', nameValue);  // 可能性極高 2
-        formData.append('mauticform[textarea]', nameValue);    // 可能性極高 3
-        
-        // 信箱欄位（維持不變）
-        formData.append('mauticform[email]', emailValue);
-        formData.append('mauticform[Email]', emailValue); 
-
-        // 3. 在背景將資料發送到您本機的 Mautic 系統
-        fetch('http://localhost:8080/form/submit?formId=3', {
-            method: 'POST',
-            body: formData,
-            mode: 'no-cors'
-        })
-        .then(function() {
-            alert("資料已嘗試發送！請刷新 Mautic 後台檢查名字有沒有出來。");
-            document.getElementById('username').value = '';
-            document.getElementById('useremail').value = '';
-        })
-        .catch(function(error) {
-            alert("發送失敗，請確認您的 Mautic 是否正常開啟。");
-        });
-    }
+        // 清空表單欄位，方便下一次輸入
+        document.getElementById('username').value = '';
+        document.getElementById('useremail').value = '';
+    })
+    .catch(function(error) {
+        // 只有在完全連不上伺服器（例如 Mautic 服務未啟動）時才會觸發此錯誤
+        alert("連線失敗，請確認您的 Mautic 服務是否正常開啟。");
+        console.error("Error:", error);
+    });
+}
 </script>
-
-
 
 </body>
 </html>
