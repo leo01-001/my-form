@@ -2,56 +2,37 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>聯絡表單</title>
+    <title>Mautic 表單測試</title>
 </head>
-<body style="font-family: Arial; padding: 20px;">
+<body>
 
-<h2>聯絡表單</h2>
+    <h1>使用者資訊收集</h1>
+    
+    <!-- 表單開始：請確認您的 action 網址與 id 正確 -->
+    <form action="http://localhost:8080/form/submit?id=3" method="post">
+        
+        <!-- 核心隱藏欄位：指定表單 ID -->
+        <input type="hidden" name="mauticform[formid]" value="3">
 
-<form onsubmit="sendToMautic(event)">
-    <label>姓名：</label><br>
-    <input type="text" id="username" required><br><br>
-    
-    <label>電子信箱：</label><br>
-    <input type="email" id="useremail" required><br><br>
-    
-    <button type="submit">提交表單</button>
-</form>
+        <!-- 姓名輸入框：name 必須是 mauticform[name] -->
+        <p>
+            <label for="form_name">姓名：</label>
+            <input type="text" id="form_name" name="mauticform[name]" required>
+        </p>
 
-<script>
-function sendToMautic(event) {
-    event.preventDefault(); 
-    
-    var nameValue = document.getElementById('username').value;
-    var emailValue = document.getElementById('useremail').value;
-    
-    var formData = new FormData();
-    formData.append('mauticform[formId]', '3');
-    formData.append('mauticform[formName]', 'userinfocollection');
-    
-    // 【終極解決方案】同時帶上新版 Mautic 5+ Short answer 所有可能的底層別名
-    formData.append('mauticform[name]', nameValue);          // 可能性 1
-    formData.append('mauticform[text]', nameValue);          // 可能性 2
-    formData.append('mauticform[short_answer]', nameValue);  // 可能性 3
-    
-    // 電子信箱
-    formData.append('mauticform[email]', emailValue);
+        <!-- 電子郵件輸入框：name 必須是 mauticform[email] -->
+        <p>
+            <label for="form_email">電子郵件：</label>
+            <input type="email" id="form_email" name="mauticform[email]" required>
+        </p>
 
-    fetch('http://localhost:8080/form/submit?formId=3', {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-    })
-    .then(function() {
-        alert("表單已成功送出！請刷新 Mautic 後台檢查「姓名」與「Email」。");
-        document.getElementById('username').value = '';
-        document.getElementById('useremail').value = '';
-    })
-    .catch(function(error) {
-        alert("連線失敗，請確認您的 Mautic 服務是否正常開啟。");
-    });
-}
-</script>
+        <!-- 提交按鈕 -->
+        <p>
+            <button type="submit">確認送出</button>
+        </p>
+        
+    </form>
+    <!-- 表單結束 -->
 
 </body>
 </html>
