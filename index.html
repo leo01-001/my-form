@@ -8,19 +8,19 @@
 
     <h1>使用者資訊收集</h1>
     
-    <!-- 表單開始：請確認您的 action 網址與 id 正確 -->
+    <!-- 表單開始 -->
     <form action="http://localhost:8080/form/submit?id=3" method="post">
         
         <!-- 核心隱藏欄位：指定表單 ID -->
         <input type="hidden" name="mauticform[formid]" value="3">
 
-        <!-- 姓名輸入框：name 必須是 mauticform[name] -->
+        <!-- 姓名輸入框：這裡必須改成 mauticform[f_name] -->
         <p>
             <label for="form_name">姓名：</label>
-            <input type="text" id="form_name" name="mauticform[name]" required>
+            <input type="text" id="form_name" name="mauticform[f_name]" required>
         </p>
 
-        <!-- 電子郵件輸入框：name 必須是 mauticform[email] -->
+        <!-- 電子郵件輸入框：通常預設是 mauticform[email] -->
         <p>
             <label for="form_email">電子郵件：</label>
             <input type="email" id="form_email" name="mauticform[email]" required>
@@ -36,3 +36,4 @@
 
 </body>
 </html>
+
