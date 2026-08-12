@@ -8,29 +8,32 @@
 
     <h1>使用者資訊收集</h1>
     
-    <!-- 確保 action 網址與您的表單 ID 一致 -->
-    <form action="http://localhost:8080/form/submit?id=3" method="post">
+    <!-- 1. 這是一個純淨無樣式的表單外殼 -->
+    <div id="mauticform_wrapper_userinfocollection" class="mauticform_wrapper">
+        <p>表單載入中...</p>
+    </div>
+
+    <!-- 2. 引進 Mautic 官方非同步腳本，它會自動將乾淨的無 CSS 表單渲染到上面的 div 中 -->
+    <!-- 請確認 src 中的 http://localhost:8080 和 id=3 符合您的真實表單 -->
+    <script type="text/javascript">
+        /** 填入您的 Mautic 安裝位置 */
+        var mauticUrl = 'http://localhost:8080';
         
-        <!-- 只需要這一個隱藏欄位即可 -->
-        <input type="hidden" name="mauticform[formid]" value="3">
+        /** 填入您的表單 ID */
+        var mauticFormId = 3;
 
-        <p>
-            <label>姓名：</label>
-            <!-- 確保使用您後台看到的 f_name -->
-            <input type="text" name="mauticform[name]" required>
-        </p>
-
-        <p>
-            <label>電子郵件：</label>
-            <input type="email" name="mauticform[email]" required>
-        </p>
-
-        <p>
-            <button type="submit">確認送出</button>
-        </p>
-        
-    </form>
+        // 以下為官方標準的非同步加載核心，它會避開所有的 500 白屏與 session 錯誤
+        if (typeof MauticSDKLoaded == 'undefined') {
+            var MauticSDKLoaded = true;
+            var head = document.getElementsByTagName('head')[0];
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = mauticUrl + '/media/js/mautic-form.js?v64bd8026';
+            script.onload = function() { MauticSDK.onLoad(); };
+            head.appendChild(script);
+        }
+    </script>
+    <script type="text/javascript" src="http://localhost:8080/form/generate.js?id=3"></script>
 
 </body>
 </html>
-
